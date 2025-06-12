@@ -6,6 +6,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using AddressBook.Infrastructure.DbContexts;
+using AddressBook.Shared.Mappings;
+using AddressBook.Shared.Validation;
+using AddressBook.Shared.DTOs.Contact;
+using FluentValidation;
 
 namespace AddressBook.UI.WinForms
 {
@@ -24,6 +28,9 @@ namespace AddressBook.UI.WinForms
                     System.Configuration.ConfigurationManager
                         .ConnectionStrings["AddressBookDb"]
                         .ConnectionString));
+            services.AddAutoMapper(typeof(ContactProfile).Assembly);
+
+            services.AddTransient<IValidator<ContactWriteDto>, ContactWriteDtoValidator>();
 
             var serviceProvider = services.BuildServiceProvider();
 
