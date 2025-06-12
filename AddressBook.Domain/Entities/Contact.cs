@@ -26,10 +26,12 @@ namespace AddressBook.Domain.Entities
         public string LastName { get; set; }
 
         [Required]
+        [Column("BirthDate", TypeName = "date")]
         public DateTime BirthDate { get; set; }
 
         [Required]
         [MaxLength(20)]
+        [Phone]
         public string PhoneNumber { get; set; }
 
         [Required]
