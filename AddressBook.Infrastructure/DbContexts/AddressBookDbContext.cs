@@ -1,4 +1,5 @@
 ﻿using AddressBook.Domain.Entities;
+using AddressBook.Infrastructure.ViewSql;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,8 @@ namespace AddressBook.Infrastructure.DbContexts
         public DbSet<Contact> Contacts { get; set; }
 
         public DbSet<Location> Locations { get; set; }
+        public DbSet<ContactViewResult> ContactView { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
