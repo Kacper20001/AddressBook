@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AddressBook.Shared.DTOs
+namespace AddressBook.Shared.DTOs.Contact
 {
     public class ContactReadDto
     {
