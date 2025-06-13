@@ -1,4 +1,6 @@
 ﻿using AddressBook.Application.Interfaces;
+using AddressBook.Application.Interfaces.Contact;
+using AddressBook.Application.Interfaces.Location;
 using AddressBook.Infrastructure.DbContexts;
 using AddressBook.Infrastructure.Repositories;
 using System;
@@ -13,11 +15,13 @@ namespace AddressBook.Infrastructure
     {
         private readonly AddressBookDbContext _context;
         public IContactRepository Contacts { get; }
+        public ILocationRepository Locations { get; }
 
         public UnitOfWork(AddressBookDbContext context)
         {
             _context = context;
             Contacts = new ContactRepository(_context);
+            Locations = new LocationRepository(_context);
         }
 
         public async Task<int> SaveChangesAsync()

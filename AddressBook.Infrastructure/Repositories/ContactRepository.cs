@@ -1,5 +1,5 @@
 ﻿using AddressBook.Domain.Entities;
-using AddressBook.Application.Interfaces;
+using AddressBook.Application.Interfaces.Contact;
 using AddressBook.Infrastructure.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AddressBook.Application.Interfaces;
 
 
 namespace AddressBook.Infrastructure.Repositories
