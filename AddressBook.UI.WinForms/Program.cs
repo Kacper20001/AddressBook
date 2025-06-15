@@ -36,12 +36,17 @@ namespace AddressBook.UI.WinForms
             services.AddTransient<IValidator<ContactWriteDto>, ContactWriteDtoValidator>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IContactService, ContactService>();
+            services.AddScoped<ContactListForm>();
+
 
             var serviceProvider = services.BuildServiceProvider();
 
             System.Windows.Forms.Application.EnableVisualStyles();
             System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
-            System.Windows.Forms.Application.Run(new Form1());
+            
+            var mainForm = serviceProvider.GetRequiredService<ContactListForm>();
+            System.Windows.Forms.Application.Run(mainForm);
+
         }
     }
 }

@@ -16,5 +16,7 @@ namespace AddressBook.Shared.DTOs.Contact
         public bool IsActive { get; set; }
         public string PostalCode { get; set; }
         public string CityName { get; set; }
+        public int LocationId { get; set; }
+
     }
 }
