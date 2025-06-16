@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.mainLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.dataGridContacts = new System.Windows.Forms.DataGridView();
             this.buttonsPanel = new System.Windows.Forms.Panel();
@@ -38,6 +39,8 @@
             this.filterPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.filterLabel = new System.Windows.Forms.Label();
             this.filterTextBox = new System.Windows.Forms.TextBox();
+            this.FilterToolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.clearFilterButton = new System.Windows.Forms.Button();
             this.mainLayoutPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridContacts)).BeginInit();
             this.buttonsPanel.SuspendLayout();
@@ -65,6 +68,10 @@
             // dataGridContacts
             // 
             this.dataGridContacts.AllowUserToAddRows = false;
+            this.dataGridContacts.AllowUserToDeleteRows = false;
+            this.dataGridContacts.AllowUserToResizeColumns = false;
+            this.dataGridContacts.AllowUserToResizeRows = false;
+            this.dataGridContacts.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
             this.dataGridContacts.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridContacts.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridContacts.Location = new System.Drawing.Point(3, 43);
@@ -135,6 +142,7 @@
             this.filterPanel.AutoSize = true;
             this.filterPanel.Controls.Add(this.filterLabel);
             this.filterPanel.Controls.Add(this.filterTextBox);
+            this.filterPanel.Controls.Add(this.clearFilterButton);
             this.filterPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.filterPanel.Location = new System.Drawing.Point(3, 3);
             this.filterPanel.Name = "filterPanel";
@@ -157,8 +165,18 @@
             // 
             this.filterTextBox.Location = new System.Drawing.Point(53, 8);
             this.filterTextBox.Name = "filterTextBox";
-            this.filterTextBox.Size = new System.Drawing.Size(200, 22);
+            this.filterTextBox.Size = new System.Drawing.Size(100, 22);
             this.filterTextBox.TabIndex = 1;
+            this.FilterToolTip.SetToolTip(this.filterTextBox, "Type to filter contacts...\r\n");
+            // 
+            // clearFilterButton
+            // 
+            this.clearFilterButton.Location = new System.Drawing.Point(159, 8);
+            this.clearFilterButton.Name = "clearFilterButton";
+            this.clearFilterButton.Size = new System.Drawing.Size(75, 23);
+            this.clearFilterButton.TabIndex = 2;
+            this.clearFilterButton.Text = "Clear";
+            this.clearFilterButton.UseVisualStyleBackColor = true;
             // 
             // ContactListForm
             // 
@@ -195,6 +213,8 @@
         private System.Windows.Forms.FlowLayoutPanel filterPanel;
         private System.Windows.Forms.Label filterLabel;
         private System.Windows.Forms.TextBox filterTextBox;
+        private System.Windows.Forms.ToolTip FilterToolTip;
+        private System.Windows.Forms.Button clearFilterButton;
     }
 }
 

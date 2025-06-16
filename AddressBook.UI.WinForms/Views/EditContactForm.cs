@@ -26,7 +26,7 @@ namespace AddressBook.UI.WinForms.Views
         public void LoadLocations(List<LocationReadDto> locations)
         {
             cityComboBox.DataSource = locations;
-            cityComboBox.DisplayMember = "CityName";
+            cityComboBox.DisplayMember = "Display";
             cityComboBox.ValueMember = "Id";
         }
 
@@ -37,7 +37,6 @@ namespace AddressBook.UI.WinForms.Views
             lastNameTextBox.Text = dto.LastName;
             birthDatePicker.Value = dto.BirthDate;
             phoneNumberTextBox.Text = dto.PhoneNumber;
-            postalCodeTextBox.Text = dto.PostalCode;
             isActiveCheckBox.Checked = dto.IsActive;
 
             cityComboBox.SelectedValue = dto.LocationId;

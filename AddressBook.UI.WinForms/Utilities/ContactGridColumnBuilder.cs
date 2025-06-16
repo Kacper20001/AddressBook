@@ -30,7 +30,8 @@ namespace AddressBook.UI.WinForms.Utilities
                 HeaderText = header,
                 Name = name,
                 ReadOnly = true,
-                AutoSizeMode = sizeMode
+                AutoSizeMode = sizeMode,
+                SortMode = DataGridViewColumnSortMode.Programmatic
             };
 
             if (!string.IsNullOrEmpty(format))
@@ -49,7 +50,8 @@ namespace AddressBook.UI.WinForms.Utilities
                 HeaderText = header,
                 Name = name,
                 ReadOnly = true,
-                AutoSizeMode = sizeMode
+                AutoSizeMode = sizeMode,
+                SortMode = DataGridViewColumnSortMode.Programmatic
             };
         }
     }

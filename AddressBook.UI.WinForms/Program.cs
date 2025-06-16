@@ -1,9 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using AddressBook.Infrastructure.DbContexts;
 using AddressBook.Shared.Mappings;
@@ -13,14 +10,15 @@ using FluentValidation;
 using AddressBook.Application.Interfaces;
 using AddressBook.Application.Services;
 using AddressBook.Infrastructure;
+using AddressBook.Application.Interfaces.Location;
+using WinFormsApp = System.Windows.Forms.Application;
+using AddressBook.UI.WinForms.Presenters;
+
 
 namespace AddressBook.UI.WinForms
 {
     static class Program
     {
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
         [STAThread]
         static void Main()
         {
@@ -36,17 +34,28 @@ namespace AddressBook.UI.WinForms
             services.AddTransient<IValidator<ContactWriteDto>, ContactWriteDtoValidator>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IContactService, ContactService>();
+            services.AddScoped<ILocationService, LocationService>();
             services.AddScoped<ContactListForm>();
-
 
             var serviceProvider = services.BuildServiceProvider();
 
-            System.Windows.Forms.Application.EnableVisualStyles();
-            System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
-            
-            var mainForm = serviceProvider.GetRequiredService<ContactListForm>();
-            System.Windows.Forms.Application.Run(mainForm);
+            WinFormsApp.EnableVisualStyles();
+            WinFormsApp.SetCompatibleTextRenderingDefault(false);
 
+            try
+            {
+                var mainForm = serviceProvider.GetRequiredService<ContactListForm>();
+
+                var contactService = serviceProvider.GetRequiredService<IContactService>();
+                var locationService = serviceProvider.GetRequiredService<ILocationService>();
+
+                var presenter = new ContactPresenter(mainForm, contactService, locationService);
+                WinFormsApp.Run(mainForm);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Startup error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

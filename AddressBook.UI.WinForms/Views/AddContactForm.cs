@@ -32,7 +32,7 @@ namespace AddressBook.UI.WinForms.Views
         public void LoadLocations(List<LocationReadDto> locations)
         {
             cityComboBox.DataSource = locations;
-            cityComboBox.DisplayMember = "CityName";
+            cityComboBox.DisplayMember = "Display";
             cityComboBox.ValueMember = "Id";
         }
     }

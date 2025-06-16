@@ -11,5 +11,8 @@ namespace AddressBook.Shared.DTOs.Location
         public int Id { get; set; }
         public string PostalCode { get; set; }
         public string CityName { get; set; }
+
+        public string Display => $"{CityName} ({PostalCode})";
+
     }
 }
