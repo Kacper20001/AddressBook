@@ -14,6 +14,7 @@ namespace AddressBook.Shared.Mappings
         public LocationProfile()
         {
             CreateMap<Location, LocationReadDto>();
+            CreateMap<LocationWriteDto, Location>();
         }
     }
 

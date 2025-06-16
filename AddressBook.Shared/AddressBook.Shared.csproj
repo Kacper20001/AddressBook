@@ -56,6 +56,7 @@
     <Compile Include="DTOs\Contact\ContactReadDto.cs" />
     <Compile Include="DTOs\Contact\ContactWriteDto.cs" />
     <Compile Include="DTOs\Location\LocationReadDto.cs" />
+    <Compile Include="DTOs\Location\LocationWriteDto.cs" />
     <Compile Include="Mappings\ContactProfile.cs" />
     <Compile Include="Mappings\LocationProfile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -21,5 +21,26 @@ namespace AddressBook.Infrastructure.Repositories
 
         public async Task<List<Location>> GetAllAsync()
             => await _context.Locations.ToListAsync();
+        
+        public async Task AddAsync(Location entity)
+        {
+            await _context.Locations.AddAsync(entity);
+        }
+       
+        public async Task<Location> GetByIdAsync(int id)
+        {
+            return await _context.Locations.FindAsync(id);
+        }
+
+        public async Task UpdateAsync(Location entity)
+        {
+            _context.Locations.Update(entity);
+            await Task.CompletedTask;
+        }
+        public async Task DeleteAsync(Location entity)
+        {
+            _context.Locations.Remove(entity);
+            await Task.CompletedTask;
+        }
     }
 }

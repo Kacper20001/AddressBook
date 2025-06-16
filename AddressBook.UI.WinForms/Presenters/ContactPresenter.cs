@@ -48,7 +48,7 @@ namespace AddressBook.UI.WinForms.Presenters
 
             try
             {
-                var locations = await _locationService.GetAllAsync();
+                var locations = await _locationService.GetAllLocations();
                 addForm.LoadLocations(locations);
 
                 if (addForm.ShowDialog() == DialogResult.OK)
