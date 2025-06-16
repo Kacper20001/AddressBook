@@ -19,6 +19,9 @@ namespace AddressBook.UI.WinForms.Views.Location
     public partial class LocationListForm : Form, ILocationView
     {
         private readonly LocationPresenter presenter;
+        private string _lastSortedColumn = "";
+        private bool _sortAscending = true;
+        private readonly ILocationService _locationService;
 
         public LocationListForm(ILocationService locationService)
         {
@@ -30,8 +33,10 @@ namespace AddressBook.UI.WinForms.Views.Location
             addLocationButton.Click += (s, e) => AddClicked?.Invoke(s, e);
             editLocationButton.Click += (s, e) => EditClicked?.Invoke(s, e);
             deleteLocationButton.Click += (s, e) => DeleteClicked?.Invoke(s, e);
-            filterTextBox.TextChanged += (s, e) => FilterTextChanged?.Invoke(s, e);
+            filterTextBox.TextChanged += (s, e) => ApplyFilterAndSort();
             dataGridLocations.SelectionChanged += (s, e) => SelectionChanged?.Invoke(s, e);
+            dataGridLocations.ColumnHeaderMouseClick += OnColumnHeaderClick;
+            ApplyFilterAndSort();
         }
 
         private void InitializeGridColumns()
@@ -100,6 +105,45 @@ namespace AddressBook.UI.WinForms.Views.Location
         {
             add { dataGridLocations.ColumnHeaderMouseClick += value; }
             remove { dataGridLocations.ColumnHeaderMouseClick -= value; }
+        }
+        private void OnColumnHeaderClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            var grid = sender as DataGridView;
+            var columnName = grid.Columns[e.ColumnIndex].DataPropertyName;
+
+            if (string.IsNullOrWhiteSpace(columnName)) return;
+
+            if (_lastSortedColumn == columnName)
+                _sortAscending = !_sortAscending;
+            else
+            {
+                _lastSortedColumn = columnName;
+                _sortAscending = true;
+            }
+
+            ApplyFilterAndSort();
+        }
+        private void ApplyFilterAndSort()
+        {
+            if (Locations == null) return; 
+
+            string filter = FilterValue?.Trim().ToLower() ?? "";
+
+            var filtered = Locations
+                .Where(l =>
+                    (!string.IsNullOrEmpty(l.CityName) && l.CityName.ToLower().Contains(filter)) ||
+                    (!string.IsNullOrEmpty(l.PostalCode) && l.PostalCode.ToLower().Contains(filter))
+                )
+                .ToList();
+
+            if (!string.IsNullOrEmpty(_lastSortedColumn))
+            {
+                filtered = _sortAscending
+                    ? filtered.OrderBy(l => l.GetType().GetProperty(_lastSortedColumn)?.GetValue(l)).ToList()
+                    : filtered.OrderByDescending(l => l.GetType().GetProperty(_lastSortedColumn)?.GetValue(l)).ToList();
+            }
+
+            Locations = filtered;
         }
 
     }

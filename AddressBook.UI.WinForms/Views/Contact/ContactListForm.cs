@@ -14,6 +14,7 @@ using AddressBook.UI.WinForms.Utilities;
 using AddressBook.Shared.DTOs.Contact;
 using AddressBook.UI.WinForms.Views;
 using AddressBook.Shared.DTOs.Location;
+using AddressBook.UI.WinForms.Views.Location;
 
 namespace AddressBook.UI.WinForms
 {
@@ -179,5 +180,10 @@ namespace AddressBook.UI.WinForms
             e.Handled = true;
         }
 
+        private void manageLocationsButton_Click(object sender, EventArgs e)
+        {
+            var form = new LocationListForm(_locationService);
+            form.ShowDialog();
+        }
     }
 }
