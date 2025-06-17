@@ -23,7 +23,7 @@ namespace AddressBook.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<List<LocationReadDto>> GetAllLocations()
+        public async Task<List<LocationReadDto>> GetAllAsync()
         {
             var locations = await _unitOfWork.Locations.GetAllAsync();
             return _mapper.Map<List<LocationReadDto>>(locations);

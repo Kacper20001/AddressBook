@@ -117,7 +117,7 @@ namespace AddressBook.UI.WinForms
         {
             try
             {
-                var locations = await _locationService.GetAllLocations();
+                var locations = await _locationService.GetAllAsync();
 
                 using (var form = new EditContactForm())
                 {

@@ -9,7 +9,7 @@ namespace AddressBook.Application.Interfaces.Location
 {
     public interface ILocationService
     {
-        Task<List<LocationReadDto>> GetAllLocations();
+        Task<List<LocationReadDto>> GetAllAsync();
         Task<LocationReadDto> GetByIdAsync(int id);
         Task AddAsync(LocationWriteDto dto);
         Task UpdateAsync(int id, LocationWriteDto dto);

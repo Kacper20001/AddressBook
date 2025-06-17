@@ -1,4 +1,5 @@
 ﻿using AddressBook.Application.Interfaces.Location;
+using AddressBook.Application.Services;
 using AddressBook.UI.WinForms.Interfaces;
 using AddressBook.UI.WinForms.Views.Location;
 using System;
@@ -32,7 +33,7 @@ namespace AddressBook.UI.WinForms.Presenters
 
         private async void LoadLocations()
         {
-            var allLocations = await service.GetAllLocations();
+            var allLocations = await service.GetAllAsync();
 
             var filtered = string.IsNullOrWhiteSpace(view.FilterValue)
                 ? allLocations
@@ -72,7 +73,7 @@ namespace AddressBook.UI.WinForms.Presenters
                 return;
             }
 
-            var locations = await service.GetAllLocations();
+            var locations = await service.GetAllAsync();
             var selectedLocation = locations.FirstOrDefault(l => l.Id == selectedId);
             if (selectedLocation == null)
             {
