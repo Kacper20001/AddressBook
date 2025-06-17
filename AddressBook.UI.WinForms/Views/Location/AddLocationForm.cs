@@ -1,5 +1,8 @@
 ﻿using AddressBook.Shared.DTOs.Location;
+using FluentValidation;
+using FluentValidation.Results;
 using System;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace AddressBook.UI.WinForms.Views.Location
@@ -9,6 +12,8 @@ namespace AddressBook.UI.WinForms.Views.Location
     /// </summary>
     public partial class AddLocationForm : Form
     {
+        private readonly IValidator<LocationWriteDto> _validator;
+
         /// <summary>
         /// Gets the newly created location data after confirmation.
         /// </summary>
@@ -17,8 +22,10 @@ namespace AddressBook.UI.WinForms.Views.Location
         /// <summary>
         /// Initializes a new instance of the <see cref="AddLocationForm"/> class.
         /// </summary>
-        public AddLocationForm()
+        /// <param name="validator">Validator for validating the location data.</param>
+        public AddLocationForm(IValidator<LocationWriteDto> validator)
         {
+            _validator = validator;
             InitializeComponent();
 
             saveButton.Click += SaveButton_Click;
@@ -26,25 +33,29 @@ namespace AddressBook.UI.WinForms.Views.Location
         }
 
         /// <summary>
-        /// Validates input and creates the new location DTO if successful.
+        /// Handles the save button click.
+        /// Validates user input and assigns the NewLocation property.
         /// </summary>
+        /// <param name="sender">Event source.</param>
+        /// <param name="e">Event arguments.</param>
         private void SaveButton_Click(object sender, EventArgs e)
         {
-            string cityName = cityNameTextBox.Text.Trim();
-            string postalCode = postalCodeTextBox.Text.Trim();
-
-            if (string.IsNullOrWhiteSpace(cityName) || string.IsNullOrWhiteSpace(postalCode))
+            var dto = new LocationWriteDto
             {
-                MessageBox.Show("All fields are required.");
+                CityName = cityNameTextBox.Text.Trim(),
+                PostalCode = postalCodeTextBox.Text.Trim()
+            };
+
+            ValidationResult result = _validator.Validate(dto);
+            if (!result.IsValid)
+            {
+                MessageBox.Show(string.Join(Environment.NewLine, result.Errors.Select(x => x.ErrorMessage)),
+                                "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                this.DialogResult = DialogResult.None;
                 return;
             }
 
-            NewLocation = new LocationWriteDto
-            {
-                CityName = cityName,
-                PostalCode = postalCode
-            };
-
+            NewLocation = dto;
             DialogResult = DialogResult.OK;
         }
     }

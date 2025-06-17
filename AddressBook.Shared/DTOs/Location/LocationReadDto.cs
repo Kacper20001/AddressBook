@@ -13,5 +13,8 @@
 
         /// <summary>City name of the location.</summary>
         public string CityName { get; set; }
+        
+        /// <summary>Display string combining city and postal code for UI. </summary>
+        public string Display => $"{CityName} ({PostalCode})";
     }
 }

@@ -1,8 +1,10 @@
 ﻿using AddressBook.Application.Interfaces.Location;
+using AddressBook.Application.Services;
 using AddressBook.Shared.DTOs.Location;
 using AddressBook.UI.WinForms.Interfaces;
 using AddressBook.UI.WinForms.Presenters;
 using AddressBook.UI.WinForms.Utilities;
+using FluentValidation;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -12,179 +14,164 @@ using System.Windows.Forms;
 namespace AddressBook.UI.WinForms.Views.Location
 {
     /// <summary>
-    /// Represents the form used to display and manage the list of locations.
+    /// Main form used to manage the list of locations.
     /// </summary>
     public partial class LocationListForm : Form, ILocationView
     {
-        private readonly LocationPresenter presenter;
-        private string _lastSortedColumn = "";
-        private bool _sortAscending = true;
         private readonly ILocationService _locationService;
+        private readonly IValidator<LocationWriteDto> _validator;
+        private List<LocationReadDto> _allLocations = new List<LocationReadDto>();
+
+        /// <inheritdoc />
+        public event EventHandler AddClicked;
+
+        /// <inheritdoc />
+        public event EventHandler EditClicked;
+
+        /// <inheritdoc />
+        public event EventHandler DeleteClicked;
+
+        /// <inheritdoc />
+        public event EventHandler SelectionChanged;
+
+        /// <inheritdoc />
+        public event EventHandler FilterTextChanged;
+
+        /// <inheritdoc />
+        public event DataGridViewCellMouseEventHandler ColumnHeaderMouseClick;
+
+        /// <inheritdoc />
+        public event DataGridViewCellMouseEventHandler SortRequested;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LocationListForm"/> class.
         /// </summary>
-        /// <param name="locationService">Service used to handle location data.</param>
-        public LocationListForm(ILocationService locationService)
+        /// <param name="locationService">Service used to manage locations.</param>
+        /// <param name="validator">Validator for location input.</param>
+        public LocationListForm(ILocationService locationService, IValidator<LocationWriteDto> validator)
         {
+            _locationService = locationService;
+            _validator = validator;
+
             InitializeComponent();
-            presenter = new LocationPresenter(this, locationService);
 
-            InitializeGridColumns();
+            var presenter = new LocationPresenter(this, locationService, validator);
 
+            // Configure DataGridView
+            dataGridLocations.AutoGenerateColumns = false;
+            dataGridLocations.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dataGridLocations.MultiSelect = false;
+            dataGridLocations.ReadOnly = true;
+            dataGridLocations.AllowUserToAddRows = false;
+            dataGridLocations.AllowUserToDeleteRows = false;
+
+            dataGridLocations.Columns.Clear();
+            dataGridLocations.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "Id", HeaderText = "ID", Width = 50 });
+            dataGridLocations.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "CityName", HeaderText = "City", Width = 150 });
+            dataGridLocations.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "PostalCode", HeaderText = "Postal Code", Width = 100 });
+
+            // Hook events
             addLocationButton.Click += (s, e) => AddClicked?.Invoke(s, e);
             editLocationButton.Click += (s, e) => EditClicked?.Invoke(s, e);
             deleteLocationButton.Click += (s, e) => DeleteClicked?.Invoke(s, e);
-            filterTextBox.TextChanged += (s, e) => ApplyFilterAndSort();
             dataGridLocations.SelectionChanged += (s, e) => SelectionChanged?.Invoke(s, e);
-            dataGridLocations.ColumnHeaderMouseClick += OnColumnHeaderClick;
-            ApplyFilterAndSort();
+            dataGridLocations.ColumnHeaderMouseClick += (s, e) => SortRequested?.Invoke(dataGridLocations, e);
+            dataGridLocations.SortCompare += DataGridLocations_SortCompare;
+            filterTextBox.TextChanged += (s, e) => FilterTextChanged?.Invoke(s, e);
+            clearFilterButton.Click += (s, e) =>
+            {
+                filterTextBox.Clear();
+                FilterTextChanged?.Invoke(s, e);
+            };
         }
 
-        /// <summary>
-        /// Initializes the columns of the location DataGridView.
-        /// </summary>
-        private void InitializeGridColumns()
-        {
-            dataGridLocations.AutoGenerateColumns = false;
-            dataGridLocations.Columns.Clear();
-
-            var columns = LocationGridColumnBuilder.BuildColumns();
-            dataGridLocations.Columns.AddRange(columns.ToArray());
-        }
-
-        /// <summary>
-        /// Occurs when the Add button is clicked.
-        /// </summary>
-        public event EventHandler AddClicked;
-
-        /// <summary>
-        /// Occurs when the Edit button is clicked.
-        /// </summary>
-        public event EventHandler EditClicked;
-
-        /// <summary>
-        /// Occurs when the Delete button is clicked.
-        /// </summary>
-        public event EventHandler DeleteClicked;
-
-        /// <summary>
-        /// Occurs when the text in the filter box is changed.
-        /// </summary>
-        public event EventHandler FilterTextChanged;
-
-        /// <summary>
-        /// Occurs when the selected row in the grid is changed.
-        /// </summary>
-        public event EventHandler SelectionChanged;
-
-        /// <summary>
-        /// Gets or sets the list of locations to be displayed in the grid.
-        /// </summary>
+        /// <inheritdoc />
         public List<LocationReadDto> Locations
         {
-            get => (List<LocationReadDto>)dataGridLocations.DataSource;
-            set => dataGridLocations.DataSource = value;
+            set
+            {
+                _allLocations = value ?? new List<LocationReadDto>();
+                ApplyFilter();
+            }
         }
 
-        /// <summary>
-        /// Gets the current filter text entered by the user.
-        /// </summary>
-        public string FilterValue => filterTextBox.Text;
-
-        /// <summary>
-        /// Gets the ID of the currently selected location.
-        /// </summary>
+        /// <inheritdoc />
         public int SelectedLocationId
         {
             get
             {
-                if (dataGridLocations.CurrentRow?.DataBoundItem is LocationReadDto location)
-                    return location.Id;
+                if (dataGridLocations.CurrentRow?.DataBoundItem is LocationReadDto loc)
+                    return loc.Id;
                 return -1;
             }
         }
 
-        /// <summary>
-        /// Loads a list of locations into the grid.
-        /// </summary>
-        /// <param name="locations">List of locations to display.</param>
+        /// <inheritdoc />
+        public LocationWriteDto LocationToCreate => new LocationWriteDto();
+
+        /// <inheritdoc />
+        public string FilterValue => filterTextBox.Text.Trim();
+
+        /// <inheritdoc />
         public void LoadLocations(List<LocationReadDto> locations)
         {
-            Locations = locations;
+            _allLocations = locations ?? new List<LocationReadDto>();
+            ApplyFilter();
         }
 
-        /// <summary>
-        /// Displays a message box with the specified message.
-        /// </summary>
-        /// <param name="message">The message to display.</param>
-        public void ShowMessage(string message)
+        /// <inheritdoc />
+        public void ShowMessage(string message) => MessageBox.Show(message);
+
+        /// <inheritdoc />
+        public void ClearForm()
         {
-            MessageBox.Show(message);
+            filterTextBox.Clear();
+            dataGridLocations.ClearSelection();
         }
 
-        /// <summary>
-        /// Clears the filter input field.
-        /// </summary>
+        /// <inheritdoc />
         public void ClearFilter()
         {
             filterTextBox.Clear();
+            ApplyFilter();
         }
 
         /// <summary>
-        /// Occurs when a column header is clicked.
+        /// Applies text-based filter to the location list.
         /// </summary>
-        public event DataGridViewCellMouseEventHandler ColumnHeaderMouseClick
+        private void ApplyFilter()
         {
-            add { dataGridLocations.ColumnHeaderMouseClick += value; }
-            remove { dataGridLocations.ColumnHeaderMouseClick -= value; }
+            string filter = FilterValue.ToLower();
+            var filtered = string.IsNullOrEmpty(filter)
+                ? _allLocations
+                : _allLocations.Where(l =>
+                    l.Id.ToString().Contains(filter) ||
+                    (l.CityName?.ToLower().Contains(filter) ?? false) ||
+                    (l.PostalCode?.ToLower().Contains(filter) ?? false)
+                ).ToList();
+
+            dataGridLocations.DataSource = filtered;
         }
 
         /// <summary>
-        /// Handles column header clicks to perform sorting.
+        /// Handles sorting logic when columns are clicked.
         /// </summary>
-        private void OnColumnHeaderClick(object sender, DataGridViewCellMouseEventArgs e)
+        private void DataGridLocations_SortCompare(object sender, DataGridViewSortCompareEventArgs e)
         {
-            var grid = sender as DataGridView;
-            var columnName = grid.Columns[e.ColumnIndex].DataPropertyName;
-
-            if (string.IsNullOrWhiteSpace(columnName)) return;
-
-            if (_lastSortedColumn == columnName)
-                _sortAscending = !_sortAscending;
-            else
-            {
-                _lastSortedColumn = columnName;
-                _sortAscending = true;
-            }
-
-            ApplyFilterAndSort();
+            e.SortResult = string.Compare(
+                e.CellValue1?.ToString(),
+                e.CellValue2?.ToString(),
+                StringComparison.OrdinalIgnoreCase
+            );
+            e.Handled = true;
         }
 
         /// <summary>
-        /// Applies the current filter and sort settings to the location list.
+        /// Opens the contact management form and hides the current form.
         /// </summary>
-        private void ApplyFilterAndSort()
+        private void ContactsButton_Click(object sender, EventArgs e)
         {
-            if (Locations == null) return;
-
-            string filter = FilterValue?.Trim().ToLower() ?? "";
-
-            var filtered = Locations
-                .Where(l =>
-                    (!string.IsNullOrEmpty(l.CityName) && l.CityName.ToLower().Contains(filter)) ||
-                    (!string.IsNullOrEmpty(l.PostalCode) && l.PostalCode.ToLower().Contains(filter))
-                )
-                .ToList();
-
-            if (!string.IsNullOrEmpty(_lastSortedColumn))
-            {
-                filtered = _sortAscending
-                    ? filtered.OrderBy(l => l.GetType().GetProperty(_lastSortedColumn)?.GetValue(l)).ToList()
-                    : filtered.OrderByDescending(l => l.GetType().GetProperty(_lastSortedColumn)?.GetValue(l)).ToList();
-            }
-
-            Locations = filtered;
+            FormNavigator.ShowContactForm(this);
         }
     }
 }

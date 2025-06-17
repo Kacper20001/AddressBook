@@ -6,24 +6,29 @@ using System.Windows.Forms;
 namespace AddressBook.UI.WinForms.Interfaces
 {
     /// <summary>
-    /// Interface for the location view in the MVP pattern.
+    /// Defines the interface for the location view in the MVP architecture.
     /// </summary>
     public interface ILocationView
     {
         /// <summary>
-        /// Gets or sets the list of displayed locations.
+        /// Sets the list of locations to be displayed.
         /// </summary>
-        List<LocationReadDto> Locations { get; set; }
-
-        /// <summary>
-        /// Gets the value used for filtering locations.
-        /// </summary>
-        string FilterValue { get; }
+        List<LocationReadDto> Locations { set; }
 
         /// <summary>
         /// Gets the ID of the currently selected location.
         /// </summary>
         int SelectedLocationId { get; }
+
+        /// <summary>
+        /// Gets the data used to create a new location.
+        /// </summary>
+        LocationWriteDto LocationToCreate { get; }
+
+        /// <summary>
+        /// Gets the current text value used for filtering the location list.
+        /// </summary>
+        string FilterValue { get; }
 
         /// <summary>
         /// Occurs when the Add button is clicked.
@@ -41,22 +46,27 @@ namespace AddressBook.UI.WinForms.Interfaces
         event EventHandler DeleteClicked;
 
         /// <summary>
-        /// Occurs when the selection changes in the data grid.
-        /// </summary>
-        event EventHandler SelectionChanged;
-
-        /// <summary>
-        /// Occurs when the filter text value is changed.
+        /// Occurs when the text in the filter box changes.
         /// </summary>
         event EventHandler FilterTextChanged;
 
         /// <summary>
-        /// Occurs when a column header is clicked in the data grid (for sorting).
+        /// Occurs when the user clicks a column header in the grid.
         /// </summary>
         event DataGridViewCellMouseEventHandler ColumnHeaderMouseClick;
 
         /// <summary>
-        /// Loads the provided list of locations into the view.
+        /// Occurs when the user changes the selected location in the grid.
+        /// </summary>
+        event EventHandler SelectionChanged;
+
+        /// <summary>
+        /// Occurs when a sort is requested for the grid.
+        /// </summary>
+        event DataGridViewCellMouseEventHandler SortRequested;
+
+        /// <summary>
+        /// Loads a list of locations into the view.
         /// </summary>
         /// <param name="locations">The list of locations to load.</param>
         void LoadLocations(List<LocationReadDto> locations);
@@ -64,12 +74,18 @@ namespace AddressBook.UI.WinForms.Interfaces
         /// <summary>
         /// Displays a message to the user.
         /// </summary>
-        /// <param name="message">Message text to display.</param>
+        /// <param name="message">The message to display.</param>
         void ShowMessage(string message);
 
         /// <summary>
-        /// Clears the current value of the location filter.
+        /// Clears all user inputs and selections in the form.
+        /// </summary>
+        void ClearForm();
+
+        /// <summary>
+        /// Clears the filter input and refreshes the location list.
         /// </summary>
         void ClearFilter();
     }
 }
+

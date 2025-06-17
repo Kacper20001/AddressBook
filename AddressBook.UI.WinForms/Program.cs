@@ -16,6 +16,8 @@ using AddressBook.UI.WinForms.Presenters;
 using AddressBook.Infrastructure.Repositories;
 using AddressBook.Application.Interfaces.ReadModels;
 using AddressBook.Shared.DTOs.Location;
+using AddressBook.UI.WinForms.Utilities;
+using AddressBook.UI.WinForms.Views.Location;
 
 namespace AddressBook.UI.WinForms
 {
@@ -25,41 +27,67 @@ namespace AddressBook.UI.WinForms
     static class Program
     {
         /// <summary>
-        /// Configures services and starts the application.
+        /// Configures services, sets up dependency injection and starts the application.
         /// </summary>
         [STAThread]
         static void Main()
         {
             var services = new ServiceCollection();
 
+            // Configure EF Core with SQL Server
             services.AddDbContext<AddressBookDbContext>(options =>
                 options.UseSqlServer(
                     System.Configuration.ConfigurationManager
                         .ConnectionStrings["AddressBookDb"]
                         .ConnectionString));
+
+            // Register AutoMapper profiles
             services.AddAutoMapper(typeof(ContactProfile).Assembly);
 
+            // Register FluentValidation validators
             services.AddTransient<IValidator<ContactWriteDto>, ContactWriteDtoValidator>();
             services.AddTransient<IValidator<LocationWriteDto>, LocationWriteDtoValidator>();
+
+            // Register domain services and repositories
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IContactService, ContactService>();
             services.AddScoped<ILocationService, LocationService>();
-            services.AddScoped<ContactListForm>();
             services.AddScoped<IContactViewRepository, ContactViewRepository>();
 
+            // Register ContactListForm using a factory for constructor injection
+            services.AddScoped<ContactListForm>(provider =>
+            {
+                var contactService = provider.GetRequiredService<IContactService>();
+                var locationService = provider.GetRequiredService<ILocationService>();
+                var locationValidator = provider.GetRequiredService<IValidator<LocationWriteDto>>();
+                var contactValidator = provider.GetRequiredService<IValidator<ContactWriteDto>>();
+
+                return new ContactListForm(contactService, locationService, locationValidator, contactValidator);
+            });
+
+            // Build the service provider for DI
             var serviceProvider = services.BuildServiceProvider();
 
+            // Configure global form factories for navigation
+            FormNavigator.ContactFormFactory = () => serviceProvider.GetRequiredService<ContactListForm>();
+            FormNavigator.LocationFormFactory = () => new LocationListForm(
+                serviceProvider.GetRequiredService<ILocationService>(),
+                serviceProvider.GetRequiredService<IValidator<LocationWriteDto>>());
+
+            // Standard WinForms application startup
             WinFormsApp.EnableVisualStyles();
             WinFormsApp.SetCompatibleTextRenderingDefault(false);
 
             try
             {
                 var mainForm = serviceProvider.GetRequiredService<ContactListForm>();
-
                 var contactService = serviceProvider.GetRequiredService<IContactService>();
                 var locationService = serviceProvider.GetRequiredService<ILocationService>();
+                var validator = serviceProvider.GetRequiredService<IValidator<ContactWriteDto>>();
 
-                var presenter = new ContactPresenter(mainForm, contactService, locationService);
+                // Attach presenter to main form
+                var presenter = new ContactPresenter(mainForm, contactService, locationService, validator);
+
                 WinFormsApp.Run(mainForm);
             }
             catch (Exception ex)

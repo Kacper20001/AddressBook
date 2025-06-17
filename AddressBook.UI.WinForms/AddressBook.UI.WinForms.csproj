@@ -195,6 +195,7 @@
     <Compile Include="Presenters\ContactPresenter.cs" />
     <Compile Include="Presenters\LocationPresenter.cs" />
     <Compile Include="Utilities\ContactGridColumnBuilder.cs" />
+    <Compile Include="Utilities\FormNavigator.cs" />
     <Compile Include="Utilities\LocationGridColumnBuilder.cs" />
     <Compile Include="Views\Contact\AddContactForm.cs">
       <SubType>Form</SubType>
@@ -254,6 +255,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Views\Location\AddLocationForm.resx">
       <DependentUpon>AddLocationForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Location\LocationListForm.resx">
+      <DependentUpon>LocationListForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

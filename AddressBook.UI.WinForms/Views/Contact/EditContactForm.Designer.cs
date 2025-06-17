@@ -42,8 +42,8 @@
             this.buttonFlowPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.cancelButton = new System.Windows.Forms.Button();
             this.saveButton = new System.Windows.Forms.Button();
-            this.isActiveLabel = new System.Windows.Forms.Label();
             this.isActiveCheckBox = new System.Windows.Forms.CheckBox();
+            this.isActiveLabel = new System.Windows.Forms.Label();
             this.editLayoutPanel.SuspendLayout();
             this.buttonFlowPanel.SuspendLayout();
             this.SuspendLayout();
@@ -216,6 +216,15 @@
             this.saveButton.Text = "Save";
             this.saveButton.UseVisualStyleBackColor = true;
             // 
+            // isActiveCheckBox
+            // 
+            this.isActiveCheckBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.isActiveCheckBox.Location = new System.Drawing.Point(116, 289);
+            this.isActiveCheckBox.Name = "isActiveCheckBox";
+            this.isActiveCheckBox.Size = new System.Drawing.Size(104, 24);
+            this.isActiveCheckBox.TabIndex = 14;
+            this.isActiveCheckBox.UseVisualStyleBackColor = true;
+            // 
             // isActiveLabel
             // 
             this.isActiveLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
@@ -226,15 +235,6 @@
             this.isActiveLabel.TabIndex = 13;
             this.isActiveLabel.Text = "Is Active";
             this.isActiveLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            // 
-            // isActiveCheckBox
-            // 
-            this.isActiveCheckBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.isActiveCheckBox.Location = new System.Drawing.Point(116, 289);
-            this.isActiveCheckBox.Name = "isActiveCheckBox";
-            this.isActiveCheckBox.Size = new System.Drawing.Size(104, 24);
-            this.isActiveCheckBox.TabIndex = 14;
-            this.isActiveCheckBox.UseVisualStyleBackColor = true;
             // 
             // EditContactForm
             // 
@@ -248,6 +248,7 @@
             this.Controls.Add(this.editLayoutPanel);
             this.MinimumSize = new System.Drawing.Size(400, 300);
             this.Name = "EditContactForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Edit Contact";
             this.editLayoutPanel.ResumeLayout(false);
             this.editLayoutPanel.PerformLayout();

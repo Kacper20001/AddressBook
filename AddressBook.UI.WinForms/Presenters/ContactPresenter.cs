@@ -3,6 +3,7 @@ using AddressBook.Application.Interfaces.Location;
 using AddressBook.Shared.DTOs.Contact;
 using AddressBook.UI.WinForms.Interfaces;
 using AddressBook.UI.WinForms.Views;
+using FluentValidation;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,30 +14,44 @@ namespace AddressBook.UI.WinForms.Presenters
     /// <summary>
     /// Handles user interactions in the contact management view (MVP pattern).
     /// </summary>
+    /// <summary>
+    /// Handles user interactions in the contact management view (MVP pattern).
+    /// </summary>
     public class ContactPresenter
     {
         private readonly IContactView _view;
         private readonly IContactService _contactService;
         private readonly ILocationService _locationService;
+        private readonly IValidator<ContactWriteDto> _validator;
 
         /// <summary>
-        /// Initializes a new instance of the ContactPresenter class and wires up event handlers.
+        /// Initializes a new instance of the <see cref="ContactPresenter"/> class and wires up view events.
         /// </summary>
-        public ContactPresenter(IContactView view, IContactService contactService, ILocationService locationService)
+        /// <param name="view">The contact view.</param>
+        /// <param name="contactService">Service for managing contacts.</param>
+        /// <param name="locationService">Service for managing locations.</param>
+        /// <param name="validator">Validator for contact data.</param>
+        public ContactPresenter(
+            IContactView view,
+            IContactService contactService,
+            ILocationService locationService,
+            IValidator<ContactWriteDto> validator)
         {
             _view = view;
             _contactService = contactService;
             _locationService = locationService;
+            _validator = validator;
 
             _view.CreateClicked += async (s, e) => await ShowAddContactDialogAsync();
             _view.UpdateClicked += async (s, e) => await UpdateAsync();
             _view.DeleteClicked += async (s, e) => await DeleteAsync();
+
             _ = LoadAllAsync();
         }
 
         /// <summary>
-        /// Loads all contacts from the service and updates the view.
-        /// Uses view-based projection to display enriched data.
+        /// Loads all contacts from the database using the view-based projection.
+        /// Updates the view with the retrieved contact data.
         /// </summary>
         private async Task LoadAllAsync()
         {
@@ -63,11 +78,12 @@ namespace AddressBook.UI.WinForms.Presenters
         }
 
         /// <summary>
-        /// Opens a dialog to add a new contact, validates input, and updates the view.
+        /// Opens a dialog to create a new contact, performs validation,
+        /// saves the contact if valid, and updates the view.
         /// </summary>
         private async Task ShowAddContactDialogAsync()
         {
-            var addForm = new AddContactForm();
+            var addForm = new AddContactForm(_validator);
 
             try
             {
@@ -100,7 +116,7 @@ namespace AddressBook.UI.WinForms.Presenters
         }
 
         /// <summary>
-        /// Updates the currently selected contact using data from the form.
+        /// Updates the currently selected contact using data from the view.
         /// </summary>
         private async Task UpdateAsync()
         {
@@ -126,7 +142,7 @@ namespace AddressBook.UI.WinForms.Presenters
         }
 
         /// <summary>
-        /// Deletes the selected contact after confirmation.
+        /// Deletes the selected contact after user confirmation.
         /// </summary>
         private async Task DeleteAsync()
         {
