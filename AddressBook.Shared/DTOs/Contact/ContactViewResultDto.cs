@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AddressBook.Infrastructure.ViewSql
+namespace AddressBook.Shared.DTOs.Contact
 {
-    public class ContactViewResult
+    public class ContactViewResultDto
     {
         public int Id { get; set; }
         public string FirstName { get; set; }

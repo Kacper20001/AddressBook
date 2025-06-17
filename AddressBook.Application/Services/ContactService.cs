@@ -1,4 +1,5 @@
 ﻿using AddressBook.Application.Interfaces;
+using AddressBook.Application.Interfaces.ReadModels;
 using AddressBook.Domain.Entities;
 using AddressBook.Shared.DTOs.Contact;
 using AutoMapper;
@@ -13,12 +14,31 @@ namespace AddressBook.Application.Services
     public class ContactService : IContactService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IContactViewRepository _contactViewRepository;
         private readonly IMapper _mapper;
 
-        public ContactService(IUnitOfWork unitOfWork, IMapper mapper)
+        public ContactService(IUnitOfWork unitOfWork, IContactViewRepository contactViewRepository, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _contactViewRepository = contactViewRepository;
             _mapper = mapper;
+        }
+
+        public async Task<List<ContactViewResultDto>> GetAllFromViewAsync()
+        {
+            var viewData = await _contactViewRepository.GetAllAsync();
+
+            return viewData.Select(c => new ContactViewResultDto
+            {
+                Id = c.Id,
+                FirstName = c.FirstName,
+                LastName = c.LastName,
+                BirthDate = c.BirthDate,
+                PhoneNumber = c.PhoneNumber,
+                IsActive = c.IsActive,
+                PostalCode = c.PostalCode,
+                CityName = c.CityName
+            }).ToList();
         }
 
         public async Task<List<ContactReadDto>> GetAllAsync()

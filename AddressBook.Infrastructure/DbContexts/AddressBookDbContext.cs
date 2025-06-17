@@ -1,5 +1,5 @@
 ﻿using AddressBook.Domain.Entities;
-using AddressBook.Infrastructure.ViewSql;
+using AddressBook.Shared.DTOs.Contact;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -20,10 +20,8 @@ namespace AddressBook.Infrastructure.DbContexts
         }
 
         public DbSet<Contact> Contacts { get; set; }
-
         public DbSet<Location> Locations { get; set; }
-        public DbSet<ContactViewResult> ContactView { get; set; }
-
+        public DbSet<ContactViewResultDto> ContactView { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -31,6 +29,10 @@ namespace AddressBook.Infrastructure.DbContexts
                 .HasOne(c => c.Location)
                 .WithMany(l => l.Contacts)
                 .HasForeignKey(c => c.LocationId);
+
+            modelBuilder.Entity<ContactViewResultDto>()
+                .HasNoKey()
+                .ToView("ContactView");
 
             base.OnModelCreating(modelBuilder);
         }

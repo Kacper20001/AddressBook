@@ -13,6 +13,8 @@ using AddressBook.Infrastructure;
 using AddressBook.Application.Interfaces.Location;
 using WinFormsApp = System.Windows.Forms.Application;
 using AddressBook.UI.WinForms.Presenters;
+using AddressBook.Infrastructure.Repositories;
+using AddressBook.Application.Interfaces.ReadModels;
 
 
 namespace AddressBook.UI.WinForms
@@ -36,6 +38,8 @@ namespace AddressBook.UI.WinForms
             services.AddScoped<IContactService, ContactService>();
             services.AddScoped<ILocationService, LocationService>();
             services.AddScoped<ContactListForm>();
+            services.AddScoped<IContactViewRepository, ContactViewRepository>();
+
 
             var serviceProvider = services.BuildServiceProvider();
 

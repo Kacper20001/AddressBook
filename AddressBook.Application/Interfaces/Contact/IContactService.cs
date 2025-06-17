@@ -9,6 +9,7 @@ namespace AddressBook.Application.Interfaces
 {
     public interface IContactService
     {
+        Task<List<ContactViewResultDto>> GetAllFromViewAsync();
         Task<List<ContactReadDto>> GetAllAsync();
         Task<ContactReadDto> GetByIdAsync(int id);
         Task CreateAsync(ContactWriteDto dto);

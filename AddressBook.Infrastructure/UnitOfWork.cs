@@ -17,6 +17,7 @@ namespace AddressBook.Infrastructure
         public IContactRepository Contacts { get; }
         public ILocationRepository Locations { get; }
 
+
         public UnitOfWork(AddressBookDbContext context)
         {
             _context = context;

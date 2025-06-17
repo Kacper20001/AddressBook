@@ -54,6 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DTOs\Contact\ContactReadDto.cs" />
+    <Compile Include="DTOs\Contact\ContactViewResultDto.cs" />
     <Compile Include="DTOs\Contact\ContactWriteDto.cs" />
     <Compile Include="DTOs\Location\LocationReadDto.cs" />
     <Compile Include="DTOs\Location\LocationWriteDto.cs" />

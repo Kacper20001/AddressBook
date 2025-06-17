@@ -1,5 +1,6 @@
 ﻿using AddressBook.Application.Interfaces;
 using AddressBook.Application.Interfaces.Location;
+using AddressBook.Shared.DTOs.Contact;
 using AddressBook.UI.WinForms.Interfaces;
 using AddressBook.UI.WinForms.Views;
 using System;
@@ -33,8 +34,20 @@ namespace AddressBook.UI.WinForms.Presenters
         {
             try
             {
-                var contacts = await _contactService.GetAllAsync();
-                _view.Contacts = contacts;
+                var contacts = await _contactService.GetAllFromViewAsync();
+                //var contacts = await _contactService.GetAllAsync();
+                _view.Contacts = contacts.Select(c => new ContactReadDto
+                {
+                    Id = c.Id,
+                    FirstName = c.FirstName,
+                    LastName = c.LastName,
+                    BirthDate = c.BirthDate,
+                    PhoneNumber = c.PhoneNumber,
+                    IsActive = c.IsActive,
+                    PostalCode = c.PostalCode,
+                    CityName = c.CityName,
+                    LocationId = 0
+                }).ToList();
             }
             catch (Exception ex)
             {

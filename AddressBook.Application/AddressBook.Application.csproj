@@ -61,6 +61,7 @@
     <Compile Include="Interfaces\Location\ILocationRepository.cs" />
     <Compile Include="Interfaces\Location\ILocationService.cs" />
     <Compile Include="Interfaces\IUnitOfWork.cs" />
+    <Compile Include="Interfaces\ReadModels\IContactViewRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\ContactService.cs" />
     <Compile Include="Services\LocationService.cs" />
