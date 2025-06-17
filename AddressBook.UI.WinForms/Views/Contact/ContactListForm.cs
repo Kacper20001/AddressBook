@@ -59,6 +59,7 @@ namespace AddressBook.UI.WinForms
             InitializeComponent();
 
             ConfigureDataGrid();
+            dataGridContacts.AutoGenerateColumns = false;
             ContactGridColumnBuilder.Configure(dataGridContacts);
 
             addContactButton.Click += (s, e) => CreateClicked?.Invoke(s, e);

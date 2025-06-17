@@ -5,6 +5,8 @@ using AddressBook.UI.WinForms.Views.Location;
 using FluentValidation;
 using System;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace AddressBook.UI.WinForms.Presenters
@@ -18,6 +20,11 @@ namespace AddressBook.UI.WinForms.Presenters
         private readonly ILocationView view;
         private readonly ILocationService service;
         private readonly IValidator<LocationWriteDto> _validator;
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+        private CancellationTokenSource _filterCts;
+
+
+
         private string _lastSortedColumn = "";
         private bool _sortAscending = true;
 
@@ -39,32 +46,40 @@ namespace AddressBook.UI.WinForms.Presenters
             view.FilterTextChanged += OnFilterChanged;
             view.SortRequested += OnColumnHeaderClick;
 
-            LoadLocations();
+            _=LoadLocations();
         }
 
         /// <summary>
         /// Loads and filters locations based on current view state.
         /// Applies sorting if a column has been previously selected.
         /// </summary>
-        private async void LoadLocations()
+        private async Task LoadLocations()
         {
-            var allLocations = await service.GetAllAsync();
-
-            var filtered = string.IsNullOrWhiteSpace(view.FilterValue)
-                ? allLocations
-                : allLocations.Where(l =>
-                    l.CityName != null && l.CityName.IndexOf(view.FilterValue, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                    l.PostalCode != null && l.PostalCode.IndexOf(view.FilterValue, StringComparison.OrdinalIgnoreCase) >= 0
-                ).ToList();
-
-            if (!string.IsNullOrEmpty(_lastSortedColumn))
+            await _semaphore.WaitAsync();
+            try
             {
-                filtered = _sortAscending
-                    ? filtered.OrderBy(l => l.GetType().GetProperty(_lastSortedColumn)?.GetValue(l)).ToList()
-                    : filtered.OrderByDescending(l => l.GetType().GetProperty(_lastSortedColumn)?.GetValue(l)).ToList();
-            }
+                var allLocations = await service.GetAllAsync();
 
-            view.LoadLocations(filtered);
+                var filtered = string.IsNullOrWhiteSpace(view.FilterValue)
+                    ? allLocations
+                    : allLocations.Where(l =>
+                        l.CityName != null && l.CityName.IndexOf(view.FilterValue, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        l.PostalCode != null && l.PostalCode.IndexOf(view.FilterValue, StringComparison.OrdinalIgnoreCase) >= 0
+                    ).ToList();
+
+                if (!string.IsNullOrEmpty(_lastSortedColumn))
+                {
+                    filtered = _sortAscending
+                        ? filtered.OrderBy(l => l.GetType().GetProperty(_lastSortedColumn)?.GetValue(l)).ToList()
+                        : filtered.OrderByDescending(l => l.GetType().GetProperty(_lastSortedColumn)?.GetValue(l)).ToList();
+                }
+
+                view.LoadLocations(filtered);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         /// <summary>
@@ -81,7 +96,7 @@ namespace AddressBook.UI.WinForms.Presenters
                 var locationToAdd = form.NewLocation;
                 await service.AddAsync(locationToAdd);
                 view.ShowMessage("Location added.");
-                LoadLocations();
+                await LoadLocations();
             }
         }
 
@@ -115,7 +130,7 @@ namespace AddressBook.UI.WinForms.Presenters
             {
                 await service.UpdateAsync(form.LocationId, form.UpdatedLocation);
                 view.ShowMessage("Location updated.");
-                LoadLocations();
+                await LoadLocations();
             }
         }
 
@@ -140,7 +155,7 @@ namespace AddressBook.UI.WinForms.Presenters
             {
                 await service.DeleteAsync(view.SelectedLocationId);
                 view.ShowMessage("Location deleted.");
-                LoadLocations();
+                await LoadLocations();
             }
             catch (Exception ex)
             {
@@ -154,7 +169,7 @@ namespace AddressBook.UI.WinForms.Presenters
         /// </summary>
         /// <param name="sender">Event sender (DataGridView).</param>
         /// <param name="e">Event arguments with column index info.</param>
-        private void OnColumnHeaderClick(object sender, DataGridViewCellMouseEventArgs e)
+        private async void OnColumnHeaderClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             var grid = sender as DataGridView;
             var columnName = grid.Columns[e.ColumnIndex].DataPropertyName;
@@ -169,7 +184,7 @@ namespace AddressBook.UI.WinForms.Presenters
                 _sortAscending = true;
             }
 
-            LoadLocations();
+            await LoadLocations();
         }
 
         /// <summary>
@@ -177,7 +192,10 @@ namespace AddressBook.UI.WinForms.Presenters
         /// </summary>
         /// <param name="sender">Event sender (TextBox).</param>
         /// <param name="e">Event arguments.</param>
-        private void OnFilterChanged(object sender, EventArgs e) => LoadLocations();
+        private void OnFilterChanged(object sender, EventArgs e)
+        {
+            _ = LoadLocations();
+        }
     }
 
 }
