@@ -40,9 +40,9 @@
             this.filterLabel = new System.Windows.Forms.Label();
             this.filterTextBox = new System.Windows.Forms.TextBox();
             this.clearFilterButton = new System.Windows.Forms.Button();
+            this.panel1 = new System.Windows.Forms.Panel();
             this.manageLocationsButton = new System.Windows.Forms.Button();
             this.FilterToolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.panel1 = new System.Windows.Forms.Panel();
             this.mainLayoutPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridContacts)).BeginInit();
             this.buttonsPanel.SuspendLayout();
@@ -167,12 +167,12 @@
             // 
             // filterTextBox
             // 
-            this.filterTextBox.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.filterTextBox.Location = new System.Drawing.Point(53, 14);
+            this.filterTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.filterTextBox.Location = new System.Drawing.Point(53, 8);
             this.filterTextBox.Name = "filterTextBox";
             this.filterTextBox.Size = new System.Drawing.Size(100, 22);
             this.filterTextBox.TabIndex = 1;
-            this.FilterToolTip.SetToolTip(this.filterTextBox, "Type to filter contacts...\r\n");
+            this.FilterToolTip.SetToolTip(this.filterTextBox, "Type to filter locations...");
             // 
             // clearFilterButton
             // 
@@ -184,6 +184,13 @@
             this.clearFilterButton.Text = "Clear";
             this.clearFilterButton.UseVisualStyleBackColor = true;
             // 
+            // panel1
+            // 
+            this.panel1.Location = new System.Drawing.Point(240, 8);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(486, 34);
+            this.panel1.TabIndex = 4;
+            // 
             // manageLocationsButton
             // 
             this.manageLocationsButton.AutoSize = true;
@@ -194,13 +201,6 @@
             this.manageLocationsButton.Text = "Manage Locations";
             this.manageLocationsButton.UseVisualStyleBackColor = true;
             this.manageLocationsButton.Click += new System.EventHandler(this.manageLocationsButton_Click);
-            // 
-            // panel1
-            // 
-            this.panel1.Location = new System.Drawing.Point(240, 8);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(486, 34);
-            this.panel1.TabIndex = 4;
             // 
             // ContactListForm
             // 

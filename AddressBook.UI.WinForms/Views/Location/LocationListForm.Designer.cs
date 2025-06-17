@@ -168,8 +168,8 @@
             // 
             // filterTextBox
             // 
-            this.filterTextBox.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.filterTextBox.Location = new System.Drawing.Point(53, 14);
+            this.filterTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.filterTextBox.Location = new System.Drawing.Point(53, 8);
             this.filterTextBox.Name = "filterTextBox";
             this.filterTextBox.Size = new System.Drawing.Size(100, 22);
             this.filterTextBox.TabIndex = 1;
@@ -189,15 +189,15 @@
             // 
             this.panel1.Location = new System.Drawing.Point(240, 8);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(316, 34);
+            this.panel1.Size = new System.Drawing.Size(333, 34);
             this.panel1.TabIndex = 5;
             // 
             // ContactsButton
             // 
             this.ContactsButton.AutoSize = true;
-            this.ContactsButton.Location = new System.Drawing.Point(562, 8);
+            this.ContactsButton.Location = new System.Drawing.Point(579, 8);
             this.ContactsButton.Name = "ContactsButton";
-            this.ContactsButton.Size = new System.Drawing.Size(128, 26);
+            this.ContactsButton.Size = new System.Drawing.Size(100, 26);
             this.ContactsButton.TabIndex = 6;
             this.ContactsButton.Text = "Contacts";
             this.ContactsButton.UseVisualStyleBackColor = true;
