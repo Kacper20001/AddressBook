@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using AddressBook.Shared.DTOs.Location;
+using AddressBook.UI.WinForms.Utilities;
 
 namespace AddressBook.UI.WinForms.Views.Location
 {
@@ -44,23 +45,8 @@ namespace AddressBook.UI.WinForms.Views.Location
             dataGridLocations.AutoGenerateColumns = false;
             dataGridLocations.Columns.Clear();
 
-            dataGridLocations.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                DataPropertyName = "CityName",
-                HeaderText = "City",
-                Name = "CityName",
-                ReadOnly = true,
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
-            });
-
-            dataGridLocations.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                DataPropertyName = "PostalCode",
-                HeaderText = "Postal Code",
-                Name = "PostalCode",
-                ReadOnly = true,
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
-            });
+            var columns = LocationGridColumnBuilder.BuildColumns();
+            dataGridLocations.Columns.AddRange(columns.ToArray());
         }
 
         public event EventHandler AddClicked;

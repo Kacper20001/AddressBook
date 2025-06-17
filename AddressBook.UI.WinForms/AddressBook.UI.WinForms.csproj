@@ -195,6 +195,7 @@
     <Compile Include="Presenters\ContactPresenter.cs" />
     <Compile Include="Presenters\LocationPresenter.cs" />
     <Compile Include="Utilities\ContactGridColumnBuilder.cs" />
+    <Compile Include="Utilities\LocationGridColumnBuilder.cs" />
     <Compile Include="Views\Contact\AddContactForm.cs">
       <SubType>Form</SubType>
     </Compile>
