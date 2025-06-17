@@ -1,20 +1,22 @@
 ﻿using AddressBook.Shared.DTOs.Location;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace AddressBook.UI.WinForms.Views.Location
 {
+    /// <summary>
+    /// Form for adding a new location entry.
+    /// </summary>
     public partial class AddLocationForm : Form
     {
+        /// <summary>
+        /// Gets the newly created location data after confirmation.
+        /// </summary>
         public LocationWriteDto NewLocation { get; private set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AddLocationForm"/> class.
+        /// </summary>
         public AddLocationForm()
         {
             InitializeComponent();
@@ -23,6 +25,9 @@ namespace AddressBook.UI.WinForms.Views.Location
             cancelButton.Click += (s, e) => DialogResult = DialogResult.Cancel;
         }
 
+        /// <summary>
+        /// Validates input and creates the new location DTO if successful.
+        /// </summary>
         private void SaveButton_Click(object sender, EventArgs e)
         {
             string cityName = cityNameTextBox.Text.Trim();

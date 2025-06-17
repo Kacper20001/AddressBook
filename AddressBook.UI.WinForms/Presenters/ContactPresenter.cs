@@ -4,20 +4,24 @@ using AddressBook.Shared.DTOs.Contact;
 using AddressBook.UI.WinForms.Interfaces;
 using AddressBook.UI.WinForms.Views;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace AddressBook.UI.WinForms.Presenters
 {
+    /// <summary>
+    /// Handles user interactions in the contact management view (MVP pattern).
+    /// </summary>
     public class ContactPresenter
     {
         private readonly IContactView _view;
         private readonly IContactService _contactService;
         private readonly ILocationService _locationService;
 
+        /// <summary>
+        /// Initializes a new instance of the ContactPresenter class and wires up event handlers.
+        /// </summary>
         public ContactPresenter(IContactView view, IContactService contactService, ILocationService locationService)
         {
             _view = view;
@@ -30,12 +34,15 @@ namespace AddressBook.UI.WinForms.Presenters
             _ = LoadAllAsync();
         }
 
+        /// <summary>
+        /// Loads all contacts from the service and updates the view.
+        /// Uses view-based projection to display enriched data.
+        /// </summary>
         private async Task LoadAllAsync()
         {
             try
             {
                 var contacts = await _contactService.GetAllFromViewAsync();
-                //var contacts = await _contactService.GetAllAsync();
                 _view.Contacts = contacts.Select(c => new ContactReadDto
                 {
                     Id = c.Id,
@@ -55,6 +62,9 @@ namespace AddressBook.UI.WinForms.Presenters
             }
         }
 
+        /// <summary>
+        /// Opens a dialog to add a new contact, validates input, and updates the view.
+        /// </summary>
         private async Task ShowAddContactDialogAsync()
         {
             var addForm = new AddContactForm();
@@ -89,6 +99,9 @@ namespace AddressBook.UI.WinForms.Presenters
             }
         }
 
+        /// <summary>
+        /// Updates the currently selected contact using data from the form.
+        /// </summary>
         private async Task UpdateAsync()
         {
             try
@@ -112,6 +125,9 @@ namespace AddressBook.UI.WinForms.Presenters
             }
         }
 
+        /// <summary>
+        /// Deletes the selected contact after confirmation.
+        /// </summary>
         private async Task DeleteAsync()
         {
             try

@@ -1,16 +1,16 @@
 ﻿using AddressBook.Application.Interfaces.Location;
-using AddressBook.Application.Services;
 using AddressBook.UI.WinForms.Interfaces;
 using AddressBook.UI.WinForms.Views.Location;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace AddressBook.UI.WinForms.Presenters
 {
+    /// <summary>
+    /// Presenter handling logic for the location management view (MVP).
+    /// Includes filtering, sorting and CRUD interactions.
+    /// </summary>
     public class LocationPresenter
     {
         private readonly ILocationView view;
@@ -18,6 +18,9 @@ namespace AddressBook.UI.WinForms.Presenters
         private string _lastSortedColumn = "";
         private bool _sortAscending = true;
 
+        /// <summary>
+        /// Initializes a new instance of the LocationPresenter class and subscribes to view events.
+        /// </summary>
         public LocationPresenter(ILocationView view, ILocationService service)
         {
             this.view = view;
@@ -31,6 +34,10 @@ namespace AddressBook.UI.WinForms.Presenters
             LoadLocations();
         }
 
+        /// <summary>
+        /// Loads and filters locations based on current view state.
+        /// Applies sorting if applicable.
+        /// </summary>
         private async void LoadLocations()
         {
             var allLocations = await service.GetAllAsync();
@@ -52,18 +59,24 @@ namespace AddressBook.UI.WinForms.Presenters
             view.LoadLocations(filtered);
         }
 
+        /// <summary>
+        /// Handles the Add button click, opens form and persists new location.
+        /// </summary>
         private async void OnAddClicked(object sender, EventArgs e)
         {
             var form = new AddLocationForm();
             if (form.ShowDialog() == DialogResult.OK)
             {
                 var locationToAdd = form.NewLocation;
-                await service.AddAsync(locationToAdd); 
+                await service.AddAsync(locationToAdd);
                 view.ShowMessage("Location added.");
                 LoadLocations();
             }
         }
 
+        /// <summary>
+        /// Handles the Edit button click, loads selected location and updates it after form submission.
+        /// </summary>
         private async void OnEditClicked(object sender, EventArgs e)
         {
             var selectedId = view.SelectedLocationId;
@@ -92,6 +105,9 @@ namespace AddressBook.UI.WinForms.Presenters
             }
         }
 
+        /// <summary>
+        /// Handles the Delete button click and removes the selected location after confirmation.
+        /// </summary>
         private async void OnDeleteClicked(object sender, EventArgs e)
         {
             if (view.SelectedLocationId <= 0)
@@ -107,13 +123,17 @@ namespace AddressBook.UI.WinForms.Presenters
             {
                 await service.DeleteAsync(view.SelectedLocationId);
                 view.ShowMessage("Location deleted.");
-                LoadLocations(); 
+                LoadLocations();
             }
             catch (Exception ex)
             {
                 view.ShowMessage($"Error deleting location: {ex.Message}");
             }
         }
+
+        /// <summary>
+        /// Handles column header clicks in the data grid to apply sorting.
+        /// </summary>
         private void OnColumnHeaderClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             var grid = sender as DataGridView;
@@ -132,6 +152,10 @@ namespace AddressBook.UI.WinForms.Presenters
             LoadLocations();
         }
 
+        /// <summary>
+        /// Handles changes in the filter text input.
+        /// </summary>
         private void OnFilterChanged(object sender, EventArgs e) => LoadLocations();
     }
+
 }

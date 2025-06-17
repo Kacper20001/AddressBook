@@ -1,44 +1,51 @@
-﻿using AddressBook.Domain.Entities;
-using AddressBook.Application.Interfaces.Contact;
+﻿using AddressBook.Application.Interfaces.Contact;
+using AddressBook.Domain.Entities;
 using AddressBook.Infrastructure.DbContexts;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using AddressBook.Application.Interfaces;
 
 
 namespace AddressBook.Infrastructure.Repositories
 {
+    /// <summary>
+    /// Repository for accessing and modifying Contact entities using EF Core.
+    /// </summary>
     public class ContactRepository : IContactRepository
     {
         private readonly AddressBookDbContext _context;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ContactRepository"/> class with the provided database context.
+        /// </summary>
         public ContactRepository(AddressBookDbContext context)
         {
-            _context = context;
+            this._context = context;
         }
 
+        /// <inheritdoc/>
         public async Task<List<Contact>> GetAllAsync()
-            => await _context.Contacts.Include(c => c.Location).ToListAsync();
+            => await this._context.Contacts.Include(c => c.Location).ToListAsync();
 
+        /// <inheritdoc/>
         public async Task<Contact> GetByIdAsync(int id)
-            => await _context.Contacts.Include(c => c.Location).FirstOrDefaultAsync(c => c.Id == id);
+            => await this._context.Contacts.Include(c => c.Location).FirstOrDefaultAsync(c => c.Id == id);
 
+        /// <inheritdoc/>
         public async Task AddAsync(Contact contact)
-            => await _context.Contacts.AddAsync(contact);
+            => await this._context.Contacts.AddAsync(contact);
 
+        /// <inheritdoc/>
         public Task UpdateAsync(Contact contact)
         {
-            _context.Contacts.Update(contact);
+            this._context.Contacts.Update(contact);
             return Task.CompletedTask;
         }
 
+        /// <inheritdoc/>
         public Task DeleteAsync(Contact contact)
         {
-            _context.Contacts.Remove(contact);
+            this._context.Contacts.Remove(contact);
             return Task.CompletedTask;
         }
     }

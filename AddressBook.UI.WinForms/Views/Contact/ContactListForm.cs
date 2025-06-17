@@ -1,23 +1,22 @@
-﻿using AddressBook.Application.Interfaces.Location;
-using AddressBook.Application.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using AddressBook.Application.Interfaces;
+using AddressBook.Application.Interfaces.Location;
+using AddressBook.Shared.DTOs.Contact;
 using AddressBook.UI.WinForms.Interfaces;
 using AddressBook.UI.WinForms.Utilities;
-using AddressBook.Shared.DTOs.Contact;
 using AddressBook.UI.WinForms.Views;
-using AddressBook.Shared.DTOs.Location;
 using AddressBook.UI.WinForms.Views.Location;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace AddressBook.UI.WinForms
 {
+    /// <summary>
+    /// Main form used for managing the list of contacts.
+    /// </summary>
     public partial class ContactListForm : Form, IContactView
     {
         private readonly IContactService _contactService;
@@ -28,11 +27,21 @@ namespace AddressBook.UI.WinForms
         private string _lastSortedColumn = "";
         private bool _sortAscending = true;
 
+        /// <inheritdoc />
         public event EventHandler CreateClicked;
+
+        /// <inheritdoc />
         public event EventHandler UpdateClicked;
+
+        /// <inheritdoc />
         public event EventHandler DeleteClicked;
+
+        /// <inheritdoc />
         public event EventHandler SelectionChanged;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ContactListForm"/> class.
+        /// </summary>
         public ContactListForm(IContactService contactService, ILocationService locationService)
         {
             _contactService = contactService;
@@ -62,8 +71,7 @@ namespace AddressBook.UI.WinForms
                     : _allContacts.OrderByDescending(c => c.GetType().GetProperty(columnName)?.GetValue(c, null)).ToList();
 
                 dataGridContacts.DataSource = sorted;
-            }; ;
-
+            };
 
             editContactButton.Click += async (s, e) =>
             {
@@ -81,6 +89,7 @@ namespace AddressBook.UI.WinForms
             };
         }
 
+        /// <inheritdoc />
         public List<ContactReadDto> Contacts
         {
             set
@@ -90,6 +99,7 @@ namespace AddressBook.UI.WinForms
             }
         }
 
+        /// <inheritdoc />
         public int SelectedContactId
         {
             get
@@ -100,19 +110,26 @@ namespace AddressBook.UI.WinForms
             }
         }
 
+        /// <inheritdoc />
         public ContactWriteDto ContactToCreate => new ContactWriteDto();
 
+        /// <inheritdoc />
         public void ShowMessage(string message)
         {
             MessageBox.Show(message);
         }
 
+        /// <inheritdoc />
         public void ClearForm()
         {
             filterTextBox.Clear();
             dataGridContacts.ClearSelection();
         }
 
+        /// <summary>
+        /// Displays the edit contact form and saves changes if confirmed.
+        /// </summary>
+        /// <param name="contact">Contact to edit.</param>
         private async Task ShowEditForm(ContactReadDto contact)
         {
             try
@@ -138,12 +155,18 @@ namespace AddressBook.UI.WinForms
             }
         }
 
+        /// <summary>
+        /// Reloads all contacts from the service and updates the UI.
+        /// </summary>
         private async Task ReloadContactsAsync()
         {
             var contacts = await _contactService.GetAllAsync();
             Contacts = contacts;
         }
 
+        /// <summary>
+        /// Applies text-based filtering to the contact list.
+        /// </summary>
         private void ApplyFilter()
         {
             string filter = filterTextBox.Text.Trim().ToLower();
@@ -165,11 +188,17 @@ namespace AddressBook.UI.WinForms
             dataGridContacts.DataSource = filtered;
         }
 
+        /// <summary>
+        /// Configures additional settings for the DataGridView.
+        /// </summary>
         private void ConfigureDataGrid()
         {
             dataGridContacts.SortCompare += DataGridContacts_SortCompare;
         }
 
+        /// <summary>
+        /// Custom comparison logic for sorting DataGridView columns.
+        /// </summary>
         private void DataGridContacts_SortCompare(object sender, DataGridViewSortCompareEventArgs e)
         {
             e.SortResult = string.Compare(
@@ -180,10 +209,14 @@ namespace AddressBook.UI.WinForms
             e.Handled = true;
         }
 
+        /// <summary>
+        /// Opens the location management window.
+        /// </summary>
         private void manageLocationsButton_Click(object sender, EventArgs e)
         {
             var form = new LocationListForm(_locationService);
             form.ShowDialog();
         }
     }
+
 }

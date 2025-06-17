@@ -19,8 +19,14 @@ using AddressBook.Shared.DTOs.Location;
 
 namespace AddressBook.UI.WinForms
 {
+    /// <summary>
+    /// The main entry point for the AddressBook WinForms application.
+    /// </summary>
     static class Program
     {
+        /// <summary>
+        /// Configures services and starts the application.
+        /// </summary>
         [STAThread]
         static void Main()
         {
@@ -40,7 +46,6 @@ namespace AddressBook.UI.WinForms
             services.AddScoped<ILocationService, LocationService>();
             services.AddScoped<ContactListForm>();
             services.AddScoped<IContactViewRepository, ContactViewRepository>();
-
 
             var serviceProvider = services.BuildServiceProvider();
 

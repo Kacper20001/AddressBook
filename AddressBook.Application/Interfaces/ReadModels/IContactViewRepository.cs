@@ -1,15 +1,16 @@
-﻿using System;
+﻿using AddressBook.Shared.DTOs.Contact;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using AddressBook.Shared.DTOs.Contact;
 
 
 namespace AddressBook.Application.Interfaces.ReadModels
 {
+    /// <summary>
+    /// Provides access to contact data from a database view.
+    /// </summary>
     public interface IContactViewRepository
     {
+        /// <summary>Gets all contacts from the SQL view.</summary>
         Task<List<ContactViewResultDto>> GetAllAsync();
     }
 }
