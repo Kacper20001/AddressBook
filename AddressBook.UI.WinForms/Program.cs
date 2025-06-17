@@ -15,7 +15,7 @@ using WinFormsApp = System.Windows.Forms.Application;
 using AddressBook.UI.WinForms.Presenters;
 using AddressBook.Infrastructure.Repositories;
 using AddressBook.Application.Interfaces.ReadModels;
-
+using AddressBook.Shared.DTOs.Location;
 
 namespace AddressBook.UI.WinForms
 {
@@ -34,6 +34,7 @@ namespace AddressBook.UI.WinForms
             services.AddAutoMapper(typeof(ContactProfile).Assembly);
 
             services.AddTransient<IValidator<ContactWriteDto>, ContactWriteDtoValidator>();
+            services.AddTransient<IValidator<LocationWriteDto>, LocationWriteDtoValidator>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IContactService, ContactService>();
             services.AddScoped<ILocationService, LocationService>();
