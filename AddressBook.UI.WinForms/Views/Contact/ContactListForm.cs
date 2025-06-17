@@ -185,6 +185,7 @@ namespace AddressBook.UI.WinForms
             if (string.IsNullOrEmpty(filter))
             {
                 dataGridContacts.DataSource = _allContacts.ToList();
+                dataGridContacts.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells;
                 return;
             }
 
@@ -198,6 +199,7 @@ namespace AddressBook.UI.WinForms
             ).ToList();
 
             dataGridContacts.DataSource = filtered;
+            dataGridContacts.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells;
         }
 
         /// <summary>
